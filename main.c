@@ -2,8 +2,11 @@
 int main(int argc,char* argv[]){
         atexit(exitHandler);
 
-
-        char * rm = NULL;
+        char path[BUF_SIZE]; //임시 파일 경로
+        char spath[BUF_SIZE]; //임시 파일 경로2
+        int msgid;   //msg queue id using receive
+        int sndmsgid;   //msg queue id using send
+        char rm[QUEUE_SIZE];
 
         if(argc==2){
                 if(makefile(path,argv[1])){
@@ -16,7 +19,7 @@ int main(int argc,char* argv[]){
                 }
                 printf("%s열림\n",path);
 
-                if(receiveMSG(&rm,msgid)){ //here s problem.
+                if(receiveMSG(rm,msgid)){ //here s problem.
                   perror("cannot receive msg.");
                   exit(1);
                 };
@@ -27,8 +30,14 @@ int main(int argc,char* argv[]){
                     exit(1);
                 }
         }else if(argc == 3){
-                makefile(path,argv[1]);
-                getMSG(&msgid,path,IPC_CREAT|0644);
+                if(makefile(path,argv[1])){
+                    perror("can't not make id file.");
+                    exit(1);
+                }
+                if(getMSG(&msgid,path,IPC_CREAT|0644)){
+                  perror("can't not get msg queue.");
+                  exit(1);
+                }
                 printf("%s열림\n",path);
 
                 makepath(spath,argv[2]);
@@ -36,7 +45,7 @@ int main(int argc,char* argv[]){
                 if(getMSG(&sndmsgid,spath,0)){
                   perror("can't get send msg queue.");
                   exit(1);
-                };
+                }
                 printf("%s열림\n",spath);
 
                 if(sendMSG(path,sndmsgid)){

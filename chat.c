@@ -27,12 +27,11 @@ int getMSG(int* _msgid,char* path,int flag){
         }
         return 0;
 }
-int receiveMSG(char**buf,int msgid){
+int receiveMSG(char*buf,int msgid){
         struct mymsgbuf rcvmesg;  //receive 메시지 버퍼
         int len;
-        len = msgrcv(msgid, &rcvmesg, QUEUE_SIZE,0,0);
-        
-        printf("receive msg:%s\n",rcvmesg.mtext);
+        len = msgrcv(msgid, &rcvmesg, sizeof(rcvmesg.mtext),0,0);
+        printf("receive msg:%s, Len=%d\n",rcvmesg.mtext,len);
         if(len == -1){
           printf("cannot receive msg\n");
           return 1;
@@ -40,12 +39,13 @@ int receiveMSG(char**buf,int msgid){
 
         len++;
 
-        *buf= (char*)malloc(sizeof(char)*len);
         // if(*buf ==NULL){
         //   printf("malloc error\n");
         //   return 1;
         // }
-        strcpy(*buf,rcvmesg.mtext);
+        strcpy(buf,rcvmesg.mtext);
+        buf[len-1]='0';
+        printf("receive msg:%s\n",buf);
         //buf=rcvmesg.mtext;
         return 0;
 }
@@ -54,7 +54,7 @@ int sendMSG(char* buf, int sndmsgid){
         sndmesg.mtype = 1;
         strcpy(sndmesg.mtext, buf);
         int len = strlen(buf);
-        if(msgsnd(sndmsgid, (void*)&sndmesg,len , IPC_NOWAIT) == -1){
+        if(msgsnd(sndmsgid, (void*)&sndmesg,len+1 , IPC_NOWAIT) == -1){
                 printf("msgsnd error\n");
                 return 1;
         }
