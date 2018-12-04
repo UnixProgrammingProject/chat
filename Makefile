@@ -5,4 +5,7 @@ main.o: main.c
 chat.o: chat.c
 	gcc -c chat.c
 clean:
+	ipcrm -a
 	rm -f chat main.o chat.o
+	rm /tmp/hojun
+	rm /tmp/dodo

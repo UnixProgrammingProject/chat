@@ -19,7 +19,7 @@ int getMSG(int* _msgid,char* path,int flag){
         key_t key;
         key = ftok(path,1);
         *_msgid = msgget(key,flag);
-        printf("%s:%d\n",path,*_msgid);
+        //printf("%s:%d\n",path,*_msgid);
 
         if(*_msgid == -1){
                 printf("msgget error\n");
@@ -30,21 +30,20 @@ int getMSG(int* _msgid,char* path,int flag){
 int receiveMSG(char*buf,int msgid){
         struct mymsgbuf rcvmesg;  //receive 메시지 버퍼
         int len;
-        len = msgrcv(msgid, &rcvmesg, sizeof(rcvmesg.mtext),0,0);
-        printf("receive msg:%s, Len=%d\n",rcvmesg.mtext,len);
+        len = msgrcv(msgid, &rcvmesg, QUEUE_SIZE,0,0);
+        //printf("receive msg:%s, Len=%d\n",rcvmesg.mtext,len);
         if(len == -1){
           printf("cannot receive msg\n");
           return 1;
         }
-
         len++;
 
-        // if(*buf ==NULL){
+        // if(buf ==NULL){
         //   printf("malloc error\n");
         //   return 1;
         // }
         strcpy(buf,rcvmesg.mtext);
-        buf[len-1]='0';
+        //buf[len-1]='0';
         printf("receive msg:%s\n",buf);
         //buf=rcvmesg.mtext;
         return 0;
@@ -63,5 +62,5 @@ int sendMSG(char* buf, int sndmsgid){
 void exitHandler(){
         msgctl(msgid,IPC_RMID,(struct msqid_ds *)NULL); // 메시지 큐 제거
         unlink(path);
-        printf("program terminated\n");
+        printf("program terminated!\n");
 }
