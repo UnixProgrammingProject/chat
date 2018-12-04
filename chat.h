@@ -21,7 +21,7 @@ struct mymsgbuf{
 
 int makepath(char* buf,const char*id);
 int makefile(char* buf,const char* id);
-int get(int* _msgid,char* path,int flag);
-int receive(int msgid);
-int send(char* buf, int sndmsgid);
+int getMSG(int* _msgid,char* path,int flag);
+int receiveMSG(char**buf,int msgid);
+int sendMSG(char* buf, int sndmsgid);
 void exitHandler();

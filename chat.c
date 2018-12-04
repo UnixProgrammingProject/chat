@@ -15,7 +15,7 @@ int makefile(char* buf,const char* id)
         close(fd);
         return 0;
 }
-int get(int* _msgid,char* path,int flag){
+int getMSG(int* _msgid,char* path,int flag){
         key_t key;
         key = ftok(path,1);
         *_msgid = msgget(key,flag);
@@ -27,16 +27,29 @@ int get(int* _msgid,char* path,int flag){
         }
         return 0;
 }
-int receive(char*buf,int msgid){
+int receiveMSG(char**buf,int msgid){
         struct mymsgbuf rcvmesg;  //receive 메시지 버퍼
         int len;
-        len = msgrcv(msgid, &rcvmesg, QUEUE_SIZE,0,0)+1;
-        buf= (char*)malloc(sizeof(char)*len);
-        strcpy(buf,rcvmesg.mtext);
+        len = msgrcv(msgid, &rcvmesg, QUEUE_SIZE,0,0);
+        
+        printf("receive msg:%s\n",rcvmesg.mtext);
+        if(len == -1){
+          printf("cannot receive msg\n");
+          return 1;
+        }
+
+        len++;
+
+        *buf= (char*)malloc(sizeof(char)*len);
+        // if(*buf ==NULL){
+        //   printf("malloc error\n");
+        //   return 1;
+        // }
+        strcpy(*buf,rcvmesg.mtext);
         //buf=rcvmesg.mtext;
         return 0;
 }
-int send(char* buf, int sndmsgid){
+int sendMSG(char* buf, int sndmsgid){
         struct mymsgbuf sndmesg;  //send 메시지 버퍼
         sndmesg.mtype = 1;
         strcpy(sndmesg.mtext, buf);
